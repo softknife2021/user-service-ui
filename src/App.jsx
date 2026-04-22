@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './App.css';
 
-const API = 'http://localhost:8089';
+const API = window.location.hostname === 'localhost' ? 'http://localhost:8089' : '';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || '');
@@ -76,16 +76,16 @@ function App() {
   if (!token) {
     return (
       <div className="app">
-        <div className="login-card">
-          <h1>User Management</h1>
+        <div className="login-card" data-testid="login-form">
+          <h1 data-testid="login-title">User Management</h1>
           <p className="subtitle">Sign in to manage users</p>
-          {error && <div className="error">{error}</div>}
-          <input placeholder="Username" value={loginForm.username}
+          {error && <div className="error" data-testid="login-error">{error}</div>}
+          <input data-testid="login-username" placeholder="Username" value={loginForm.username}
             onChange={e => setLoginForm({ ...loginForm, username: e.target.value })} />
-          <input placeholder="Password" type="password" value={loginForm.password}
+          <input data-testid="login-password" placeholder="Password" type="password" value={loginForm.password}
             onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
             onKeyDown={e => e.key === 'Enter' && login()} />
-          <button className="btn-primary" onClick={login}>Sign In</button>
+          <button data-testid="login-submit" className="btn-primary" onClick={login}>Sign In</button>
         </div>
       </div>
     );
@@ -93,33 +93,33 @@ function App() {
 
   return (
     <div className="app">
-      <header>
+      <header data-testid="header">
         <h1>User Management</h1>
         <div className="header-actions">
-          <button className="btn-primary" onClick={() => setShowCreate(true)}>+ New User</button>
-          <button className="btn-secondary" onClick={logout}>Logout</button>
+          <button data-testid="create-user-btn" className="btn-primary" onClick={() => setShowCreate(true)}>+ New User</button>
+          <button data-testid="logout-btn" className="btn-secondary" onClick={logout}>Logout</button>
         </div>
       </header>
 
-      {error && <div className="error">{error}</div>}
+      {error && <div className="error" data-testid="error-message">{error}</div>}
 
       {showCreate && (
         <div className="modal-overlay" onClick={() => setShowCreate(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div className="modal" data-testid="create-user-modal" onClick={e => e.stopPropagation()}>
             <h2>Create User</h2>
-            <input placeholder="Username" value={newUser.username}
+            <input data-testid="create-username" placeholder="Username" value={newUser.username}
               onChange={e => setNewUser({ ...newUser, username: e.target.value })} />
-            <input placeholder="Email" value={newUser.email}
+            <input data-testid="create-email" placeholder="Email" value={newUser.email}
               onChange={e => setNewUser({ ...newUser, email: e.target.value })} />
-            <input placeholder="Password" type="password" value={newUser.password}
+            <input data-testid="create-password" placeholder="Password" type="password" value={newUser.password}
               onChange={e => setNewUser({ ...newUser, password: e.target.value })} />
-            <select value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })}>
+            <select data-testid="create-role" value={newUser.role} onChange={e => setNewUser({ ...newUser, role: e.target.value })}>
               <option value="USER">USER</option>
               <option value="ADMIN">ADMIN</option>
             </select>
             <div className="modal-actions">
-              <button className="btn-primary" onClick={createUser}>Create</button>
-              <button className="btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
+              <button data-testid="create-submit" className="btn-primary" onClick={createUser}>Create</button>
+              <button data-testid="create-cancel" className="btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
             </div>
           </div>
         </div>
@@ -127,43 +127,43 @@ function App() {
 
       {editUser && (
         <div className="modal-overlay" onClick={() => setEditUser(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div className="modal" data-testid="edit-user-modal" onClick={e => e.stopPropagation()}>
             <h2>Edit User</h2>
-            <input placeholder="Username" value={editUser.username}
+            <input data-testid="edit-username" placeholder="Username" value={editUser.username}
               onChange={e => setEditUser({ ...editUser, username: e.target.value })} />
-            <input placeholder="Email" value={editUser.email}
+            <input data-testid="edit-email" placeholder="Email" value={editUser.email}
               onChange={e => setEditUser({ ...editUser, email: e.target.value })} />
-            <select value={editUser.role} onChange={e => setEditUser({ ...editUser, role: e.target.value })}>
+            <select data-testid="edit-role" value={editUser.role} onChange={e => setEditUser({ ...editUser, role: e.target.value })}>
               <option value="USER">USER</option>
               <option value="ADMIN">ADMIN</option>
             </select>
             <label className="checkbox-label">
-              <input type="checkbox" checked={editUser.active}
+              <input data-testid="edit-active" type="checkbox" checked={editUser.active}
                 onChange={e => setEditUser({ ...editUser, active: e.target.checked })} /> Active
             </label>
             <div className="modal-actions">
-              <button className="btn-primary" onClick={updateUser}>Save</button>
-              <button className="btn-secondary" onClick={() => setEditUser(null)}>Cancel</button>
+              <button data-testid="edit-submit" className="btn-primary" onClick={updateUser}>Save</button>
+              <button data-testid="edit-cancel" className="btn-secondary" onClick={() => setEditUser(null)}>Cancel</button>
             </div>
           </div>
         </div>
       )}
 
-      <table>
+      <table data-testid="users-table">
         <thead>
           <tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
           {users.map(user => (
-            <tr key={user.id}>
+            <tr key={user.id} data-testid={`user-row-${user.id}`}>
               <td>{user.id}</td>
               <td>{user.username}</td>
               <td>{user.email}</td>
               <td><span className={`badge ${user.role === 'ADMIN' ? 'admin' : 'user'}`}>{user.role}</span></td>
               <td><span className={`badge ${user.active ? 'active' : 'inactive'}`}>{user.active ? 'Active' : 'Inactive'}</span></td>
               <td>
-                <button className="btn-sm" onClick={() => setEditUser({ ...user })}>Edit</button>
-                <button className="btn-sm danger" onClick={() => deleteUser(user.id)}>Delete</button>
+                <button data-testid={`edit-btn-${user.id}`} className="btn-sm" onClick={() => setEditUser({ ...user })}>Edit</button>
+                <button data-testid={`delete-btn-${user.id}`} className="btn-sm danger" onClick={() => deleteUser(user.id)}>Delete</button>
               </td>
             </tr>
           ))}
